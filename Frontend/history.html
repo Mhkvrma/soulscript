@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>History | SoulScript</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="dashboard.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="dashboard-page">
+
+  <h1 class="dtitle">📊 Your SoulScript History</h1>
+
+  <div class="dashboard">
+
+    <!-- HISTORY CHARTS -->
+    <section id="historySection">
+
+      <h2>📈 Emotional Well-being Trends</h2>
+
+      <div class="history-charts">
+
+        <div class="chart-container">
+          <h3>Emotional Index</h3>
+          <canvas id="eiChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+          <h3>Mood History</h3>
+          <canvas id="moodChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+          <h3>Energy History</h3>
+          <canvas id="energyChart"></canvas>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- PREVIOUS ASSESSMENTS -->
+    <section class="history-entries-section">
+
+      <h2>📜 Previous Assessments</h2>
+
+      <div id="historyList">
+        <p>Loading your history...</p>
+      </div>
+
+    </section>
+
+
+    <!-- BUTTON -->
+    <div class="history-controls">
+
+      <button
+        class="return-home"
+        onclick="window.location.href='dashboard.html'">
+        ← Back to Dashboard
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <footer class="footer">
+
+    <div class="footer-content">
+
+      <p>
+        ⚠️ Disclaimer: SoulScript is a reflection and
+        self-awareness tool and is not a medical diagnostic system.
+      </p>
+
+      <p>
+        © 2026 SoulScript
+      </p>
+
+    </div>
+
+  </footer>
+
+
+<script>
+
+  // ==========================================
+  // CHECK LOGIN
+  // ==========================================
+
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+
+    alert("Please login first.");
+
+    window.location.href = "index.html";
+
+  }
+
+
+  // ==========================================
+  // LOAD HISTORY
+  // ==========================================
+
+  async function loadHistory() {
+
+    try {
+
+      const headers = {
+        Authorization: `Bearer ${token}`
+      };
+
+
+      // Fetch all history data
+      const [eiResponse, moodResponse, energyResponse, entriesResponse] =
+        await Promise.all([
+
+          fetch(
+            "http://localhost:5050/api/history/emotional-index",
+            { headers }
+          ),
+
+          fetch(
+            "http://localhost:5050/api/history/mood",
+            { headers }
+          ),
+
+          fetch(
+            "http://localhost:5050/api/history/energy",
+            { headers }
+          ),
+
+          fetch(
+            "http://localhost:5050/api/history/all",
+            { headers }
+          )
+
+        ]);
+
+
+      // Check for authentication/server errors
+      if (
+        !eiResponse.ok ||
+        !moodResponse.ok ||
+        !energyResponse.ok ||
+        !entriesResponse.ok
+      ) {
+
+        throw new Error("Unable to load history.");
+
+      }
+
+
+      const eiData = await eiResponse.json();
+      const moodData = await moodResponse.json();
+      const energyData = await energyResponse.json();
+      const entries = await entriesResponse.json();
+
+
+      // ==========================================
+      // EMOTIONAL INDEX CHART
+      // ==========================================
+
+      new Chart(document.getElementById("eiChart"), {
+
+        type: "line",
+
+        data: {
+
+          labels: eiData.map(entry =>
+            new Date(entry.date).toLocaleDateString()
+          ),
+
+          datasets: [{
+
+            label: "Emotional Index (%)",
+
+            data: eiData.map(entry =>
+              Number(entry.value)
+            ),
+
+            tension: 0.4,
+
+            fill: false
+
+          }]
+
+        },
+
+        options: {
+
+          responsive: true,
+
+          scales: {
+
+            y: {
+
+              beginAtZero: true,
+
+              max: 100,
+
+              title: {
+                display: true,
+                text: "Score (%)"
+              }
+
+            }
+
+          }
+
+        }
+
+      });
+
+
+      // ==========================================
+      // MOOD CHART
+      // ==========================================
+
+      new Chart(document.getElementById("moodChart"), {
+
+        type: "bar",
+
+        data: {
+
+          labels: Object.keys(moodData),
+
+          datasets: [{
+
+            label: "Number of Assessments",
+
+            data: Object.values(moodData)
+
+          }]
+
+        },
+
+        options: {
+
+          responsive: true,
+
+          scales: {
+
+            y: {
+
+              beginAtZero: true,
+
+              ticks: {
+                stepSize: 1
+              }
+
+            }
+
+          }
+
+        }
+
+      });
+
+
+      // ==========================================
+      // ENERGY CHART
+      // ==========================================
+
+      new Chart(document.getElementById("energyChart"), {
+
+        type: "line",
+
+        data: {
+
+          labels: energyData.map(entry =>
+            new Date(entry.date).toLocaleDateString()
+          ),
+
+          datasets: [{
+
+            label: "Energy Level",
+
+            data: energyData.map(entry =>
+              Number(entry.energy)
+            ),
+
+            tension: 0.4,
+
+            fill: false
+
+          }]
+
+        },
+
+        options: {
+
+          responsive: true,
+
+          scales: {
+
+            y: {
+
+              beginAtZero: true,
+
+              max: 10,
+
+              title: {
+                display: true,
+                text: "Energy Level"
+              }
+
+            }
+
+          }
+
+        }
+
+      });
+
+
+      // ==========================================
+      // HISTORY CARDS
+      // ==========================================
+
+      const container = document.getElementById("historyList");
+
+      container.innerHTML = "";
+
+
+      if (!entries.length) {
+
+        container.innerHTML =
+          "<p class='no-history'>No previous assessments found.</p>";
+
+        return;
+
+      }
+
+
+      entries.forEach(entry => {
+
+        const card = document.createElement("div");
+
+        card.className = "history-entry";
+
+
+        const date = new Date(entry.createdAt)
+          .toDateString();
+
+
+        card.innerHTML = `
+          <h3>${date}</h3>
+
+          <p>
+            <strong>Mood:</strong> ${entry.mood}
+            &nbsp; | &nbsp;
+
+            <strong>Energy:</strong> ${entry.energy}
+          </p>
+
+          <p>
+            <strong>Emotional Index:</strong>
+            ${(Number(entry.score) * 100).toFixed(1)}%
+          </p>
+
+          <p>
+            <strong>Journal:</strong>
+            ${entry.journalEntry || "No journal entry"}
+          </p>
+        `;
+
+
+        container.appendChild(card);
+
+      });
+
+
+    } catch (error) {
+
+      console.error("History error:", error);
+
+      document.getElementById("historyList").innerHTML = `
+        <p class="no-history">
+          ❌ Unable to load your history.
+          Please try again.
+        </p>
+      `;
+
+    }
+
+  }
+
+
+  // Load history when page opens
+  loadHistory();
+
+</script>
+
+</body>
+</html>

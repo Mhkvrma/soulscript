@@ -1,0 +1,15 @@
+const mongoose = require("mongoose");
+
+const entrySchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  mood: Number,
+  energy: Number,
+  questions: Number,
+  journalEntry: String,
+  score: Number,
+  sentimentScore: Number,
+  createdAt: { type: Date, default: Date.now }
+});
+
+// module.exports = mongoose.model("entries", entrySchema);
+module.exports = mongoose.model("Entry", entrySchema);
