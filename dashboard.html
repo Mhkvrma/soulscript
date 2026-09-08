@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | SoulScript</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<link rel="stylesheet" href="dashboard.css">
+<body class="dashboard-page">
+  <h1 class="dtitle">🌿 SoulScript Dashboard</h1>
+  <div class="dashboard">
+    <div class="result-box">
+      <h2>Emotional Index:</h2> <span id="emotionalIndex">--</span>%
+    <div class="meter-container">
+      <div class="meter-fill" id="meter"></div>
+    </div>
+    <h3>Status: <span id="emotionalLevel">--</span></h3>
+    </div>
+    <div class="analysis-section">
+      <div class="descrip">
+      <h4>Description:</h4><br>
+    <p id="description">--</p>
+    </div>
+    
+  <div class="sugg">
+    <h4>💡 Personalized Suggestion:</h4><br>
+    <p id="suggestions">--</p>
+  </div>
+    </div>
+    
+    
+  
+
+  <button class="return-home" onclick="window.location.href='index.html'">Return Home</button>
+  </div>
+  <footer class="footer">
+  <div class="footer-content">
+    <p>
+      ⚠️ Disclaimer: “This page offers guidance and reflection, but true healing may need expert support.”  
+    </p>
+    <p>© 2025, SoulScriptor. All rights reserved. 🌐 www.soulscript.in</p>
+    <div class="helplines">
+      <h4>You're Not Alone - Reach Out📞 </h4>
+      <ul>
+        <li>Vandrevala Foundation Helpline: 1860 266 2345 | 1800 233 3330</li>
+        <li>NIMHANS Helpline: 080-4611 0007</li>
+      </ul>
+    </div>
+  </div>
+</footer>
+  <script src="app.js"></script>
+  <script>
+    //meter color
+    document.addEventListener("DOMContentLoaded", () => {
+      const EI = parseFloat(localStorage.getItem("emotionalIndex") || 0);
+      const meter = document.getElementById("meter");
+      meter.style.width = `${EI * 100}%`;
+
+      if (EI >= 0.75) meter.style.background = "#22c55e";
+      else if (EI >= 0.5) meter.style.background = "#facc15";
+      else if (EI >= 0.25) meter.style.background = "#f97316";
+      else meter.style.background = "#ef4444";
+    });
+  </script>
+</body>
+</html>
