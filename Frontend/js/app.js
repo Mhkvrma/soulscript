@@ -119,7 +119,7 @@ async function sendToBackend() {
   };
 
   try {
-    const response = await fetch("http://localhost:5050/api/submit", {
+    const response = await fetch("https://soulscript-9fce.onrender.com/api/submit", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -223,7 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const password = document.getElementById("password").value;
 
       try {
-        const res = await fetch("http://localhost:5050/api/auth/register", {
+        const res = await fetch("https://soulscript-9fce.onrender.com/api/auth/register", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -254,7 +254,7 @@ document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
   const password = document.getElementById("loginPassword").value;
 
   try {
-    const res = await fetch("http://localhost:5050/api/auth/login", {
+    const res = await fetch("https://soulscript-9fce.onrender.com/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
