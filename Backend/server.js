@@ -27,7 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 // =========================
 
 // Frontend is now one folder outside backend
-const frontendPath = path.join(__dirname, "../frontend");
+const frontendPath = path.join(__dirname, "../Frontend");
 
 app.use(express.static(frontendPath));
 
