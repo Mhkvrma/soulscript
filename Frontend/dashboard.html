@@ -129,12 +129,17 @@ document.getElementById("viewHistoryBtn").onclick = async () => {
 
   const headers = { Authorization: `Bearer ${token}` };
 
-  const [ei, mood, energy, entries] = await Promise.all([
-    fetch("http://localhost:5050/api/history/emotional-index", { headers }).then(r => r.json()),
-    fetch("http://localhost:5050/api/history/mood", { headers }).then(r => r.json()),
-    fetch("http://localhost:5050/api/history/energy", { headers }).then(r => r.json()),
-    fetch("http://localhost:5050/api/history/all", { headers }).then(r => r.json())
-  ]);
+ const [ei, mood, energy, entries] = await Promise.all([
+
+    fetch("https://soulscript-9fce.onrender.com/api/history/emotional-index", { headers }).then(r => r.json()),
+
+    fetch("https://soulscript-9fce.onrender.com/api/history/mood", { headers }).then(r => r.json()),
+
+    fetch("https://soulscript-9fce.onrender.com/api/history/energy", { headers }).then(r => r.json()),
+
+    fetch("https://soulscript-9fce.onrender.com/api/history/all", { headers }).then(r => r.json())
+
+]);
 
   eiChart?.destroy();
   moodChart?.destroy();
